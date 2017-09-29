@@ -1,0 +1,26 @@
+0,0,0,1, MAP_SHARED=1, MAP_PRIV=2, MAP_ANON=32
+map config = 33
+get_mmaped_address: mmap_config=33, MAP_ANON=32
+BUFFER SIZE : 1 1073741824
+Parent: Waiting...
+READ cacheL1 Access Count 16968592365
+READ cacheL1 Miss Count 16973178283
+READ dataTLB Access Count 16975889729
+READ dataTLB Miss Count 16980760361
+WRITE cacheL1 Access Count 16968592365
+WRITE cacheL1 Miss Count 16973178283
+WRITE dataTLB Access Count 16980760361
+WRITE dataTLB Miss Count 16980760361
+READ L1/L1: 100.027023
+READ TLB/L1: 100.071709
+WRITE L1/L1: 100.027023
+WRITE TLB/L1: 100.071709
+parents collected the childs termination and is terminating ...
+user CPU time used 18.360000
+system CPU time used 0.260000
+page reclaims (soft page faults) (ru_minflt) : 262257
+hard page faults (ru_majflt) : 0
+swaps (ru_nswap) : 0
+voluntary context switches (ru_nvcsw) : 4
+involuntary context switches (ru_nivcsw) : 1135
+... ... ...
