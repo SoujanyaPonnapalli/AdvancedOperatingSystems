@@ -1,0 +1,30 @@
+0,1,0,1, MAP_SHARED=1, MAP_PRIV=2, MAP_ANON=32
+map config = 33
+Child: compete_for_memory executing...
+Available memsize : 3086946Total memsize is 0.00 GBs
+0,1,0,1, MAP_SHARED=1, MAP_PRIV=2, MAP_ANON=32
+map config = 33
+get_mmaped_address: mmap_config=33, MAP_ANON=32
+BUFFER SIZE : 1 1073741824
+Parent: Waiting...
+READ cacheL1 Access Count 16996527413
+READ cacheL1 Miss Count 17001136718
+READ dataTLB Access Count 16964087045
+READ dataTLB Miss Count 16952339675
+WRITE cacheL1 Access Count 16975166394
+WRITE cacheL1 Miss Count 16982646287
+WRITE dataTLB Access Count 16991162363
+WRITE dataTLB Miss Count 16990820053
+READ L1/L1: 100.027122
+READ TLB/L1: 99.740021
+WRITE L1/L1: 100.044067
+WRITE TLB/L1: 100.092216
+parents collected the childs termination and is terminating ...
+user CPU time used 18.472000
+system CPU time used 0.256000
+page reclaims (soft page faults) (ru_minflt) : 262262
+hard page faults (ru_majflt) : 0
+swaps (ru_nswap) : 0
+voluntary context switches (ru_nvcsw) : 6
+involuntary context switches (ru_nivcsw) : 4680
+... ... ...

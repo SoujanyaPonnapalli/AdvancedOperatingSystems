@@ -29,13 +29,11 @@ int main() {
 		exit(-1);
 	}
 	// print the contents of the /proc/self/maps
-	printf("Print the contents of the /proc/self/maps\n", buf);
 	printf("%s\n", buf);
 
 	// getrusage
 	ret = getrusage(RUSAGE_SELF, usage);
 
-	printf("Print getrusage!\n");
 	printf("user CPU time used %d.%ld\n", usage->ru_utime.tv_sec, usage->ru_utime.tv_usec);
 	printf("system CPU time used %d.%ld\n", usage->ru_stime.tv_sec, usage->ru_stime.tv_usec);
 

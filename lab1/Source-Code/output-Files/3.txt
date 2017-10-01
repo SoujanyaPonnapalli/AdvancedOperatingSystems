@@ -1,0 +1,57 @@
+READ cacheL1 Access Count : 16935008180
+READ cacheL1 Miss Count : 95570351
+READ dataTLB Access Count : 16929560321
+READ dataTLB Miss Count : 8108
+WRITE cacheL1 Access Count : 6489882282
+WRITE cacheL1 Miss Count : 23550068
+WRITE dataTLB Access Count : 6491101124
+WRITE dataTLB Miss Count : 2753
+READ L1/L1 : 0.564336
+READ TLB/L1 : 0.000048
+WRITE L1/L1 : 0.362874
+WRITE TLB/L1 : 0.000042
+user CPU time used : 18.100000
+system CPU time used : 0.48000
+page reclaims (soft page faults) (ru_minflt) : 1154
+hard page faults (ru_majflt) : 0
+swaps (ru_nswap) : 0
+voluntary context switches (ru_nvcsw) : 3
+involuntary context switches (ru_nivcsw) : 1517
+READ cacheL1 Access Count : 16932937924
+READ cacheL1 Miss Count : 89264548
+READ dataTLB Access Count : 16946324822
+READ dataTLB Miss Count : 13739
+WRITE cacheL1 Access Count : 6492124697
+WRITE cacheL1 Miss Count : 17067184
+WRITE dataTLB Access Count : 6483412724
+WRITE dataTLB Miss Count : 3364
+READ L1/L1 : 0.527165
+READ TLB/L1 : 0.000081
+WRITE L1/L1 : 0.262891
+WRITE TLB/L1 : 0.000052
+user CPU time used : 18.240000
+system CPU time used : 0.32000
+page reclaims (soft page faults) (ru_minflt) : 1158
+hard page faults (ru_majflt) : 0
+swaps (ru_nswap) : 0
+voluntary context switches (ru_nvcsw) : 4
+involuntary context switches (ru_nivcsw) : 4566
+READ cacheL1 Access Count : 16916612354
+READ cacheL1 Miss Count : 88610342
+READ dataTLB Access Count : 16945913441
+READ dataTLB Miss Count : 18246
+WRITE cacheL1 Access Count : 6493983511
+WRITE cacheL1 Miss Count : 15028486
+WRITE dataTLB Access Count : 6486731919
+WRITE dataTLB Miss Count : 4392
+READ L1/L1 : 0.523807
+READ TLB/L1 : 0.000108
+WRITE L1/L1 : 0.231422
+WRITE TLB/L1 : 0.000068
+user CPU time used : 18.360000
+system CPU time used : 0.64000
+page reclaims (soft page faults) (ru_minflt) : 1159
+hard page faults (ru_majflt) : 0
+swaps (ru_nswap) : 0
+voluntary context switches (ru_nvcsw) : 4
+involuntary context switches (ru_nivcsw) : 4600

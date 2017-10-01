@@ -133,14 +133,12 @@ void do_mem_access(char* p, int size) {
 
 long get_mem_size(){
   long mem_size = sysconf (_SC_AVPHYS_PAGES);
-  printf("Available memsize : %ld", mem_size);
   return mem_size;
 }
 
 int compete_for_memory() {
    long mem_size = get_mem_size();
    int page_sz = sysconf(_SC_PAGE_SIZE);
-   printf("Total memsize is %3.2f GBs\n", (double)mem_size/(1024*1024*1024));
    fflush(stdout);
    char* p = mmap(NULL, mem_size, PROT_READ | PROT_WRITE,
                   MAP_NORESERVE|MAP_PRIVATE|MAP_ANONYMOUS, -1, (off_t) 0);
@@ -164,7 +162,6 @@ int compete_for_memory() {
       }
       i++;
    }
-   printf("compete_for_memory execution completed!\n");
    return 0;
 }
 
@@ -174,28 +171,28 @@ void printCounters() {
   assert(read(fd_cache_read_miss, &read_l1_miss_count, sizeof(long long unsigned))!=-1);
   assert(read(fd_tlb_read_access, &read_tlb_access_count, sizeof(long long unsigned))!=-1);
   assert(read(fd_tlb_read_miss, &read_tlb_miss_count, sizeof(long long unsigned))!=-1);
-  assert(read(fd_cache_read_access, &write_l1_access_count, sizeof(long long unsigned))!=-1);
-  assert(read(fd_cache_read_miss, &write_l1_miss_count, sizeof(long long unsigned))!=-1);
-  assert(read(fd_tlb_read_miss, &write_tlb_access_count, sizeof(long long unsigned))!=-1);
-  assert(read(fd_tlb_read_miss, &write_tlb_miss_count, sizeof(long long unsigned))!=-1);
+  assert(read(fd_cache_write_access, &write_l1_access_count, sizeof(long long unsigned))!=-1);
+  assert(read(fd_cache_write_miss, &write_l1_miss_count, sizeof(long long unsigned))!=-1);
+  assert(read(fd_tlb_write_access, &write_tlb_access_count, sizeof(long long unsigned))!=-1);
+  assert(read(fd_tlb_write_miss, &write_tlb_miss_count, sizeof(long long unsigned))!=-1);
 
-  printf("READ cacheL1 Access Count %llu\n", read_l1_access_count);
-  printf("READ cacheL1 Miss Count %llu\n", read_l1_miss_count);
-  printf("READ dataTLB Access Count %llu\n", read_tlb_access_count);
-  printf("READ dataTLB Miss Count %llu\n", read_tlb_miss_count);
-  printf("WRITE cacheL1 Access Count %llu\n", write_l1_access_count);
-  printf("WRITE cacheL1 Miss Count %llu\n", write_l1_miss_count);
-  printf("WRITE dataTLB Access Count %llu\n", write_tlb_access_count);
-  printf("WRITE dataTLB Miss Count %llu\n", write_tlb_miss_count);   
+  printf("READ cacheL1 Access Count : %llu\n", read_l1_access_count);
+  printf("READ cacheL1 Miss Count : %llu\n", read_l1_miss_count);
+  printf("READ dataTLB Access Count : %llu\n", read_tlb_access_count);
+  printf("READ dataTLB Miss Count : %llu\n", read_tlb_miss_count);
+  printf("WRITE cacheL1 Access Count : %llu\n", write_l1_access_count);
+  printf("WRITE cacheL1 Miss Count : %llu\n", write_l1_miss_count);
+  printf("WRITE dataTLB Access Count : %llu\n", write_tlb_access_count);
+  printf("WRITE dataTLB Miss Count : %llu\n", write_tlb_miss_count);   
 
   float val = (100*(read_l1_miss_count+0.00))/read_l1_access_count;
-  printf("READ L1/L1: %f\n", val);
+  printf("READ L1/L1 : %f\n", val);
   val = (100*(read_tlb_miss_count+0.00))/read_l1_access_count;
-  printf("READ TLB/L1: %f\n", val);
+  printf("READ TLB/L1 : %f\n", val);
   val = (100*(write_l1_miss_count+0.00))/write_l1_access_count;
-  printf("WRITE L1/L1: %f\n", val);
+  printf("WRITE L1/L1 : %f\n", val);
   val = (100*(write_tlb_miss_count+0.00))/write_l1_access_count;
-  printf("WRITE TLB/L1: %f\n", val);
+  printf("WRITE TLB/L1 : %f\n", val);
   
 }
 
@@ -252,7 +249,6 @@ void make_ioctl_calls(unsigned long flag) {
 char * get_mmaped_address(int mmap_config){
   long unsigned size = 1024*1024*1024;
   char* buff;
-  printf("%s: mmap_config=%d, MAP_ANON=%d\n", __func__, mmap_config, MAP_ANONYMOUS);
   if (mmap_config & MAP_ANONYMOUS )
     buff = mmap(NULL, size, PROT_READ | PROT_WRITE, mmap_config, -1, 0);
   else {
@@ -267,7 +263,6 @@ char * get_mmaped_address(int mmap_config){
   assert(buff != MAP_FAILED);
   assert(memset(buff, '\0', size));
   assert(msync(buff, size, MS_SYNC) != -1);
-  printf("BUFFER SIZE : %lu %lu\n",sizeof(*buff), size);
   return buff;
 }
 
@@ -275,13 +270,13 @@ static void setup_perf_counters( int mmap_config) {
 
   // Creating perf event structures and setting up attributes
   struct perf_event_attr* attr_cache_read_access = getPerfEvent(PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_ACCESS); 
-  struct perf_event_attr* attr_cache_read_miss = getPerfEvent( PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_ACCESS);
-  struct perf_event_attr* attr_tlb_read_access = getPerfEvent(PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_ACCESS); 
-  struct perf_event_attr* attr_tlb_read_miss = getPerfEvent(PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_ACCESS);
-  struct perf_event_attr* attr_cache_write_access = getPerfEvent( PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_ACCESS); 
-  struct perf_event_attr* attr_cache_write_miss = getPerfEvent(PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_ACCESS); 
-  struct perf_event_attr* attr_tlb_write_access = getPerfEvent(PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_ACCESS); 
-  struct perf_event_attr* attr_tlb_write_miss = getPerfEvent(PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_ACCESS);
+  struct perf_event_attr* attr_cache_read_miss = getPerfEvent( PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_MISS);
+  struct perf_event_attr* attr_tlb_read_access = getPerfEvent(PERF_COUNT_HW_CACHE_DTLB, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_ACCESS); 
+  struct perf_event_attr* attr_tlb_read_miss = getPerfEvent(PERF_COUNT_HW_CACHE_DTLB, PERF_COUNT_HW_CACHE_OP_READ, PERF_COUNT_HW_CACHE_RESULT_MISS);
+  struct perf_event_attr* attr_cache_write_access = getPerfEvent( PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_WRITE, PERF_COUNT_HW_CACHE_RESULT_ACCESS); 
+  struct perf_event_attr* attr_cache_write_miss = getPerfEvent(PERF_COUNT_HW_CACHE_L1D, PERF_COUNT_HW_CACHE_OP_WRITE, PERF_COUNT_HW_CACHE_RESULT_MISS); 
+  struct perf_event_attr* attr_tlb_write_access = getPerfEvent(PERF_COUNT_HW_CACHE_DTLB, PERF_COUNT_HW_CACHE_OP_WRITE, PERF_COUNT_HW_CACHE_RESULT_ACCESS); 
+  struct perf_event_attr* attr_tlb_write_miss = getPerfEvent(PERF_COUNT_HW_CACHE_DTLB, PERF_COUNT_HW_CACHE_OP_WRITE, PERF_COUNT_HW_CACHE_RESULT_MISS);
 
   // Calling perf_event_open and getting file descriptors for future use
   fd_cache_read_access = perf_event_open(attr_cache_read_access, 0, -1, -1, 0);
@@ -292,6 +287,7 @@ static void setup_perf_counters( int mmap_config) {
   fd_cache_write_miss = perf_event_open(attr_cache_write_miss, 0, -1, -1, 0);
   fd_tlb_write_access = perf_event_open(attr_tlb_write_access, 0, -1, -1, 0);
   fd_tlb_write_miss = perf_event_open(attr_tlb_write_miss, 0, -1, -1, 0);
+
   if (fd_cache_read_access <0 || fd_cache_read_miss < 0 || fd_tlb_read_access < 0 || fd_tlb_read_miss < 0 || 
       fd_cache_write_access <0 || fd_cache_write_miss < 0 || fd_tlb_write_access < 0 || fd_tlb_write_miss < 0 ){     
     printf("perf_event_open failed, %s, %d\n", strerror(errno), errno);
@@ -313,10 +309,15 @@ static void setup_perf_counters( int mmap_config) {
   cpu_set_t my_set;        /* Define your cpu_set bit mask. */
   CPU_ZERO(&my_set);       /* Initialize it all to 0, i.e. no CPUs selected. */
   CPU_SET(7, &my_set);     /* set the bit that represents core 7. */
-    
   assert( sched_setaffinity(0, sizeof(cpu_set_t), &my_set) != -1); /* Set affinity of this process to */
-  assert( system("sudo echo 3 > /proc/sys/vm/drop_caches") != -1);
-  
+ 
+ /*flushing cache*/
+  int readcache, flushsize = 32*1024;
+  unsigned int * cacheflush;
+  cacheflush = (unsigned int *) calloc(flushsize, sizeof(unsigned int));
+  for(int i=0; i<flushsize; i++){
+    readcache = cacheflush[i];
+  }  
   
   if ( pid != 0) {
     // Enable the counters
@@ -327,18 +328,14 @@ static void setup_perf_counters( int mmap_config) {
 
     long unsigned size = 1024*1024*1024;
     do_mem_access(buff, size);
-    printf("Parent: Waiting...\n");
     make_ioctl_calls(PERF_EVENT_IOC_DISABLE);
     printCounters();
     close_file_descriptors();
-    munmap(buff, size);
-    printf("parents collected the childs termination and is terminating ...\n");
-    
+    munmap(buff, size);    
   } 
   else if (pid == 0){
 
     //child process runs the compete_for_memory function
-    printf("Child: compete_for_memory executing...\n");
     compete_for_memory();
     exit(0);
   
@@ -352,22 +349,13 @@ void getrusageDetails() {
   usage = (struct rusage*) malloc(sizeof(struct rusage));
   int ret = getrusage(RUSAGE_SELF, usage);
 
-  printf("user CPU time used %ld.%ld\n", usage->ru_utime.tv_sec, usage->ru_utime.tv_usec);
-  printf("system CPU time used %ld.%ld\n", usage->ru_stime.tv_sec, usage->ru_stime.tv_usec);
+  printf("user CPU time used : %ld.%ld\n", usage->ru_utime.tv_sec, usage->ru_utime.tv_usec);
+  printf("system CPU time used : %ld.%ld\n", usage->ru_stime.tv_sec, usage->ru_stime.tv_usec);
   printf("page reclaims (soft page faults) (ru_minflt) : %ld\n", usage->ru_minflt);
   printf("hard page faults (ru_majflt) : %ld\n", usage->ru_majflt);
   printf("swaps (ru_nswap) : %ld\n", usage->ru_nswap);
   printf("voluntary context switches (ru_nvcsw) : %ld\n", usage->ru_nvcsw);
   printf("involuntary context switches (ru_nivcsw) : %ld\n", usage->ru_nivcsw);
-  // printf("resident set size (ru_maxrss) : %ld\n", usage->ru_maxrss);
-  // printf("integral shared memory  size (ru_ixrss) : %ld\n", usage->ru_ixrss);
-  // printf("integral unshared data size (ru_idrss) : %ld\n", usage->ru_idrss);
-  // printf("integral unshared stack size (ru_isrss) : %ld\n", usage->ru_isrss);
-  // printf("block input operations (ru_inblock) : %ld\n", usage->ru_inblock);
-  // printf("block output operations (ru_oublock) : %ld\n", usage->ru_oublock);
-  // printf("ipc messages sent (ru_msgsnd) : %ld\n", usage->ru_msgsnd);
-  // printf("ipc messages received (ru_msgrcv) : %ld\n", usage->ru_msgrcv);
-  // printf("signals received (ru_nsignals) : %ld\n", usage->ru_nsignals); 
 }
 
 
@@ -389,15 +377,12 @@ int main(int argc, char **argv) {
   else 
     bool_compete_for_memory = 0;
 
-  printf("%s,%s,%s,%s, MAP_SHARED=%d, MAP_PRIV=%d, MAP_ANON=%d\n", argv[1], argv[2], argv[3], argv[4], MAP_SHARED, MAP_PRIVATE, MAP_ANONYMOUS);
   int mmap_config = 0;
   if(argv[3][0] == '0') mmap_config |= MAP_SHARED;
   if(argv[3][0] == '1') mmap_config |= MAP_PRIVATE;
   if(argv[4][0] == '1') mmap_config |= MAP_ANONYMOUS;
-  printf("map config = %d\n", mmap_config);
 	setup_perf_counters(mmap_config);
   getrusageDetails();
-	printf("... ... ...\n");
 
   if((mmap_config & MAP_ANONYMOUS) && (close(test_file_fd) < 1)) {
     perror("test file not closed! Exiting\n");
